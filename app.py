@@ -15,7 +15,10 @@ FEATURES = [
 ]
 
 # === critical keywords that force Level 3 ===
-CRITICAL_WORDS = ["suicide", "kill myself", "end my life", "worthless", "hopeless", "die", "cut", "self harm"]
+CRITICAL_WORDS = [
+    "suicide", "kill myself", "end my life", "worthless", 
+    "hopeless", "die", "cut", "self harm"
+]
 
 st.title("🧠 Stress Level Detection")
 
@@ -80,6 +83,11 @@ if st.button("🔍 Predict Stress Level"):
         if critical_flag:
             decoded_label = "🚨 Critical Condition: High Stress (Level 3)"
             st.error(f"Predicted Stress Level: **{decoded_label}**")
+
+            # === ALERT message for counselor connection ===
+            st.warning("⚠️ Critical words detected in your response. "
+                       "Connecting you to a **counselor** for immediate help...")
+
         else:
             pred = model.predict(input_data)[0]
             stress_map = {
@@ -88,6 +96,15 @@ if st.button("🔍 Predict Stress Level"):
                 2: "High Stress (Level 3) 🔴"
             }
             decoded_label = stress_map.get(pred, f"Unknown Level ({pred})")
-            st.success(f"Predicted Stress Level: **{decoded_label}**")
+
+            if pred == 2:  # Level 3 (High stress from model)
+                st.error(f"Predicted Stress Level: **{decoded_label}**")
+                st.warning("⚠️ Severe Stress detected. "
+                           "Please reach out, we are connecting you to a **counselor**.")
+            elif pred == 1:
+                st.warning(f"Predicted Stress Level: **{decoded_label}**")
+            else:
+                st.success(f"Predicted Stress Level: **{decoded_label}**")
+
     except Exception as e:
         st.error(f"⚠️ Prediction failed: {e}")
