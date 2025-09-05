@@ -90,7 +90,7 @@ if st.button("🔍 Predict Stress Level"):
             st.markdown(
                 """
                 <div style="background-color:#ff4d4d; padding:15px; border-radius:8px; text-align:center; font-size:20px; color:white; font-weight:bold;">
-                    🚨 Critical words detected! Immediate counselor support required 🚨
+                   "🚨 Critical condition detected! Immediate counselor support required. 🚨 Connecting to the counselor for immediate help."
                 </div>
                 """,
                 unsafe_allow_html=True
