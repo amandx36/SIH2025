@@ -1,0 +1,106 @@
+# Step-by-Step Data Cleaning Plan
+# 1. Handle Missing Values
+
+# Some rows may have blanks (NaN).
+
+# Drop rows where target columns (Stress Value or Stress Label) are missing.
+
+# data = data.dropna(subset=["Stress Value", "Stress Label"])
+
+
+# For features like Age, CGPA, Questions, if a few rows are missing, you can:
+
+# Fill numerical with median
+
+# Fill categorical with mode
+
+# 2. Fix Age
+
+# Your "1. Age" is in ranges like "18-22".
+# Convert them to numeric midpoints (e.g., 20, 24).
+
+# def clean_age(age_str):
+#     if isinstance(age_str, str) and "-" in age_str:
+#         parts = age_str.split("-")
+#         return (int(parts[0]) + int(parts[1])) // 2
+#     elif isinstance(age_str, str) and age_str.isdigit():
+#         return int(age_str)
+#     else:
+#         return None
+
+# data["1. Age"] = data["1. Age"].apply(clean_age)
+# data = data.dropna(subset=["1. Age"])
+
+# 3. Encode Categorical Variables
+
+# Columns like "2. Gender", "3. University", "4. Department", "5. Academic Year", "7. Did you receive a waiver..." are categorical.
+# Convert them into numbers:
+
+# Gender → Male = 0, Female = 1
+
+# Academic Year → First = 1, Second = 2, ...
+
+# Waiver/Scholarship → Yes = 1, No = 0
+
+# University / Department → use Label Encoding or One-Hot Encoding.
+
+# 4. Convert CGPA
+
+# "6. Current CGPA" is a range (like "3.40 - 3.79").
+# Take the midpoint (e.g., 3.60).
+
+# def clean_cgpa(cgpa_str):
+#     if isinstance(cgpa_str, str) and "-" in cgpa_str:
+#         parts = cgpa_str.split("-")
+#         return (float(parts[0]) + float(parts[1])) / 2
+#     elif isinstance(cgpa_str, str) and cgpa_str.replace(".", "").isdigit():
+#         return float(cgpa_str)
+#     else:
+#         return None
+
+# data["6. Current CGPA"] = data["6. Current CGPA"].apply(clean_cgpa)
+
+# 5. Clean Survey Question Responses
+
+# Columns like "In a semester, how often..." contain integer scale values (0–4).
+
+# Make sure they are numeric.
+
+# for col in data.columns:
+#     if "In a semester" in col:
+#         data[col] = pd.to_numeric(data[col], errors="coerce")
+
+# 6. Map Labels to ML-Friendly Classes
+
+# "Stress Label" currently has text like Low Stress, Moderate Stress, High Stress.
+
+# Convert to:
+
+# Low Stress → 0
+
+# Moderate Stress → 1
+
+# High Stress / Severe / Critical → 2
+
+# mapping = {
+#     "Low Stress": 0,
+#     "Moderate Stress": 1,
+#     "High Stress": 2,
+#     "Severe Stress": 2,
+#     "Critical Stress": 2
+# }
+# data["Stress Class"] = data["Stress Label"].map(mapping)
+
+# 7. Normalize / Scale Features
+
+# For ML, numeric features (Age, CGPA, Survey Answers) should be scaled.
+
+# Use MinMaxScaler or StandardScaler.
+
+# 8. Final Clean Dataset
+
+# Keep only the useful features (Age, Gender, CGPA, Survey answers, etc.) + target (Stress Class).
+
+# Save cleaned dataset:
+
+# data.to_csv("Cleaned_Stress_Data.csv", index=False)
