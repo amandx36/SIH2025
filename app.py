@@ -78,15 +78,33 @@ st.write("### Input Preview (numeric encoding)")
 st.dataframe(input_data)
 
 # --- Prediction ---
+import streamlit.components.v1 as components
+
+# --- Prediction ---
 if st.button("🔍 Predict Stress Level"):
     try:
         if critical_flag:
             decoded_label = "🚨 Critical Condition: High Stress (Level 3)"
-            st.error(f"Predicted Stress Level: **{decoded_label}**")
+            
+            # TOP ALERT BANNER
+            st.markdown(
+                """
+                <div style="background-color:#ff4d4d; padding:15px; border-radius:8px; text-align:center; font-size:20px; color:white; font-weight:bold;">
+                    🚨 Critical words detected! Immediate counselor support required 🚨
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-            # === ALERT message for counselor connection ===
-            st.warning("⚠️ Critical words detected in your response. "
-                       "Connecting you to a **counselor** for immediate help...")
+            # Play warning sound
+            components.html(
+                """
+                <audio autoplay>
+                  <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+                </audio>
+                """,
+                height=0,
+            )
 
         else:
             pred = model.predict(input_data)[0]
@@ -97,10 +115,27 @@ if st.button("🔍 Predict Stress Level"):
             }
             decoded_label = stress_map.get(pred, f"Unknown Level ({pred})")
 
-            if pred == 2:  # Level 3 (High stress from model)
-                st.error(f"Predicted Stress Level: **{decoded_label}**")
-                st.warning("⚠️ Severe Stress detected. "
-                           "Please reach out, we are connecting you to a **counselor**.")
+            if pred == 2:
+                # TOP ALERT BANNER
+                st.markdown(
+                    f"""
+                    <div style="background-color:#ff4d4d; padding:15px; border-radius:8px; text-align:center; font-size:20px; color:white; font-weight:bold;">
+                        🚨 Predicted Stress Level: {decoded_label} 🚨
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                # Play warning sound
+                components.html(
+                    """
+                    <audio autoplay>
+                      <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+                    </audio>
+                    """,
+                    height=0,
+                )
+
             elif pred == 1:
                 st.warning(f"Predicted Stress Level: **{decoded_label}**")
             else:
